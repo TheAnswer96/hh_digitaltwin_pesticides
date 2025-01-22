@@ -1,8 +1,0 @@
-{
-    "size": [20, 20],
-    "trees": [
-        {"id": 1, "position": [1, 5], "num_fruits": 10},
-        {"id": 2, "position": [5, 5], "num_fruits": 15}
-    ],
-    "weather": {"temperature": 25, "humidity": 0.8, "wind": 5}
-}

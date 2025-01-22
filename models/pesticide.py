@@ -1,11 +1,17 @@
 class Pesticide:
-    def __init__(self, diffusion_rate, decay_rate, fatality_rate, repulsion_force):
-        self.id = 0
-        self.diffusion_rate = diffusion_rate
-        self.decay_rate = decay_rate
-        self.fatality_rate = fatality_rate
-        self.repulsion_force = repulsion_force  # (dx, dy)
+    def __init__(self, id, position, initial_radius, max_radius, decay_factor, mortality_probability, repulsion_probability):
+        self.id = id
+        self.position = tuple(position)
+        self.radius = initial_radius
+        self.max_radius = max_radius
+        self.decay_factor = decay_factor
+        self.mortality_probability = mortality_probability
+        self.repulsion_probability = repulsion_probability
 
-    def decay(self):
-        self.diffusion_rate *= (1 - self.decay_rate)
-        self.fatality_rate *= (1 - self.decay_rate)
+
+    def spread(self, wind_direction, wind_speed):
+        if self.radius < self.max_radius:
+            self.radius += self.wind_influence["speed"]
+
+    def affects_bug(self, bug):
+        return bug.get_distance(self.position) < self.radius

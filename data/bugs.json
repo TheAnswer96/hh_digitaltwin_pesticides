@@ -1,0 +1,23 @@
+[
+    {
+        "id": 1,
+        "seed": 42,
+        "lifetime": 5000,
+        "stage": "larva",
+        "position": [15, 30]
+    },
+    {
+        "id": 2,
+        "seed": 84,
+        "lifetime": 6000,
+        "stage": "adult",
+        "position": [45, 20]
+    },
+    {
+        "id": 3,
+        "seed": 99,
+        "lifetime": 4000,
+        "stage": "pupa",
+        "position": [70, 50]
+    }
+]

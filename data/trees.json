@@ -1,0 +1,20 @@
+[
+    {
+        "id": 1,
+        "position": [20, 40],
+        "shade_factor": 0.8,
+        "fruits": [
+            { "id": 101, "seed": 10, "ripe_lifetime": 300, "bite_tolerance": 5 },
+            { "id": 102, "seed": 15, "ripe_lifetime": 250, "bite_tolerance": 3 }
+        ]
+    },
+    {
+        "id": 2,
+        "position": [60, 70],
+        "shade_factor": 0.9,
+        "fruits": [
+            { "id": 201, "seed": 20, "ripe_lifetime": 400, "bite_tolerance": 4 },
+            { "id": 202, "seed": 25, "ripe_lifetime": 350, "bite_tolerance": 2 }
+        ]
+    }
+]

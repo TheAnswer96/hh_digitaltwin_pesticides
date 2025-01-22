@@ -1,7 +1,0 @@
-{
-    "simulation_days": 30,
-    "bugs": [
-        {"id": 1, "position": [1, 1]},
-        {"id": 2, "position": [2, 15]}
-    ]
-}

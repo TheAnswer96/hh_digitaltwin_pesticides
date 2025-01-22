@@ -1,3 +1,20 @@
 [
-    {"diffusion_rate": 1.0, "decay_rate": 0.1, "fatality_rate": 0.2, "repulsion_force": [5, 5]}
+    {
+        "id": 1,
+        "position": [50, 50],
+        "initial_radius": 5,
+        "max_radius": 20,
+        "decay_factor": 0.99,
+        "mortality_probability": 0.5,
+        "repulsion_probability": 0.2
+    },
+    {
+        "id": 2,
+        "position": [30, 60],
+        "initial_radius": 7,
+        "max_radius": 25,
+        "decay_factor": 0.98,
+        "mortality_probability": 0.6,
+        "repulsion_probability": 0.3
+    }
 ]
