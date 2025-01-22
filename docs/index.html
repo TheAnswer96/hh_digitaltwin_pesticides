@@ -1,1 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Pesticide Development Simulator - Documentation</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">Pesticide Development Simulator</a>
+        </div>
+    </nav>
 
+    <div class="container mt-4">
+        <h1 class="text-center">Documentation</h1>
+
+        <section id="execution" class="mt-5">
+            <h2>1. How to Execute</h2>
+            <p><strong>Prerequisites:</strong> Ensure you have Python 3 installed and required dependencies:</p>
+            <pre class="bg-light p-3">pip install numpy matplotlib scipy json</pre>
+            <p>Run the simulation:</p>
+            <pre class="bg-light p-3">python main.py</pre>
+        </section>
+
+        <section id="input" class="mt-5">
+            <h2>2. Description of the Input</h2>
+            <p>The simulator reads JSON files stored inside the <code>data/</code> folder.</p>
+            <h4>Example: <code>environment.json</code></h4>
+            <pre class="bg-light p-3">{
+  "size": [100, 100],
+  "climate_centroids": {
+    "temperature": [{"position": [20, 30], "value": 25}],
+    "humidity": [{"position": [15, 40], "value": 60}],
+    "light_intensity": [{"position": [10, 50], "value": 80}]
+  },
+  "time_of_day": 12,
+  "season": "summer",
+  "simulation_days": 10,
+  "seconds_per_step": 60
+}</pre>
+        </section>
+
+        <section id="code" class="mt-5">
+            <h2>3. Explanation of the Code</h2>
+            <p>The project is structured using Object-Oriented Programming (OOP). Key components:</p>
+            <ul>
+                <li><strong>SimulationLoader.py</strong> - Loads JSON data dynamically.</li>
+                <li><strong>Environment.py</strong> - Generates grid-based heatmaps and interpolates values.</li>
+                <li><strong>Bug.py</strong> - Models insect behavior and movement.</li>
+                <li><strong>Tree.py & Fruit.py</strong> - Handles fruit ripening and shading effects.</li>
+                <li><strong>Pesticide.py</strong> - Simulates pesticide diffusion and mortality effects.</li>
+                <li><strong>Simulation.py</strong> - Manages simulation flow and records execution.</li>
+            </ul>
+        </section>
+
+        <section id="contact" class="mt-5 mb-5">
+            <h2>4. Contact Us</h2>
+            <p><strong>Email:</strong> <a href="mailto:support@pesticidesim.com">support@pesticidesim.com</a></p>
+            <p><strong>Website:</strong> <a href="http://www.pesticidesim.com">www.pesticidesim.com</a></p>
+            <p><strong>GitHub Repository:</strong> <a href="http://github.com/pesticide-simulator">github.com/pesticide-simulator</a></p>
+        </section>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
