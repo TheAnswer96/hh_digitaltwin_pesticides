@@ -1,6 +1,7 @@
 [
     {
         "id": 1,
+        "name": "Fenpropathrin",
         "position": [50, 50],
         "initial_radius": 5,
         "max_radius": 20,
@@ -10,6 +11,7 @@
     },
     {
         "id": 2,
+        "name": "Fenpropathrin",
         "position": [30, 60],
         "initial_radius": 7,
         "max_radius": 25,

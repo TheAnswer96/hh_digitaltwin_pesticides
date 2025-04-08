@@ -31,7 +31,9 @@ class SimulationLoader:
                 "size": tuple(data["size"]),
                 "climate_data": data["climate_data"],
                 "time_of_day": data["time_of_day"],
-                "season": data["season"],
+                "month": data["month"],
+                "year": data["year"],
+                "day": data["day"],
                 "simulation_days": data["simulation_days"],
                 "seconds_per_step": data["seconds_per_step"]
             }
@@ -101,3 +103,4 @@ class SimulationLoader:
             "trees": self.trees,
             "pesticides": self.pesticides
         }
+

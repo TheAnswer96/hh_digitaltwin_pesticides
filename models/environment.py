@@ -1,36 +1,43 @@
 import numpy as np
 import os
 import matplotlib.pyplot as plt
-
+import keras
+from sklearn.preprocessing import MinMaxScaler
+import joblib
+from datetime import datetime, timedelta
 
 class Environment:
-    def __init__(self, size, climate_data, time_of_day, season, simulation_days, seconds_per_step):
+    def __init__(self, size, sensors_pos, temperatures, humidities, wind):
+
+        # known things of the environment
         self.size = size  # (width, height)
-        self.climate_data = climate_data
-        self.time_of_day = time_of_day
-        self.season = season
-        self.simulation_days = simulation_days
-        self.seconds_per_step = seconds_per_step
+        self.positions = sensors_pos
+        self.temperature_X = temperatures
+        self.humidity_X = humidities
+        self.wind_speed = wind["speed"]
+        self.wind_direction = wind["direction"]
 
-        self.temperature_map = self.generate_heatmap(self.climate_data["temperature"])
-        self.humidity_map = self.generate_heatmap(self.climate_data["humidity"])
-        self.light_map = self.generate_heatmap(self.climate_data["light_intensity"])
-        self.save_all_heatmaps()
+        #models
+        self.temp_model = keras.saving.load_model(os.path.join("models", "ai", "lstm_temperature_model.keras"))
+        self.hum_model = keras.saving.load_model(os.path.join("models", "ai", "lstm_humidity_model.keras"))
+        self.temp_scaler = joblib.load(os.path.join("models", "ai", "scaler_temperature.save"))
+        self.hum_scaler = joblib.load(os.path.join("models", "ai", "scaler_humidity.save"))
+        self.current_temperature, self.current_humidity, self.current_date = self.update_conditions()
+        self.temperature_map = self.generate_heatmap(self.positions, self.current_temperature)
+        self.humidity_map = self.generate_heatmap(self.positions, self.current_humidity)
+        # self.light_map = self.generate_heatmap(lights["light_intensity"])
 
-        self.wind_speed = self.climate_data["wind"]["speed"]
-        self.wind_direction = self.climate_data["wind"]["direction"]
 
-    def generate_heatmap(self, centroids):
+    def generate_heatmap(self, positions, values):
         width, height = self.size
         grid = np.zeros((width, height))
 
-        centroid_positions = np.array([c["position"] for c in centroids])
-        centroid_values = np.array([c["value"] for c in centroids])
+        centroid_positions = np.array(positions)
+        centroid_values = np.array(values[0])
 
         for x in range(width):
             for y in range(height):
                 grid[x, y] = self.inverse_distance_weighting(x, y, centroid_positions, centroid_values)
-
         return grid
 
     def inverse_distance_weighting(self, x, y, points, values, power=2):
@@ -43,55 +50,108 @@ class Environment:
         weights = 1 / (distances ** power)
         return np.sum(weights * values) / np.sum(weights)
 
-    def update_conditions(self, current_time):
-        hour = (current_time // 3600) % 24
+    def update_conditions(self):
+        # TODO: make the position of the centroids parametric
+        # WARNING: The centroid positions are hard coded for the moment to accelerate production
 
-        if 6 <= hour < 12:  # Morning
-            temp_factor = 1.1
-            light_factor = 1.3
-        elif 12 <= hour < 18:  # Afternoon
-            temp_factor = 1.3
-            light_factor = 1.1
-        elif 18 <= hour < 24:  # Evening
-            temp_factor = 0.9
-            light_factor = 0.6
-        else:  # Night
-            temp_factor = 0.7
-            light_factor = 0.2
+        last_row = self.temperature_X[-1]
+        #take the last row date
+        last_date = datetime(
+            int(last_row[-4]),  # year
+            int(last_row[-3]),  # month
+            int(last_row[-2]),  # day
+            int(last_row[-1])  # hour
+        )
+        #compute the next date
+        next_date = last_date + timedelta(hours=1)
+        date_features = np.array([
+            next_date.year,
+            next_date.month,
+            next_date.day,
+            next_date.hour
+        ])
 
-        self.temperature_map *= temp_factor
-        self.light_map *= light_factor
+        # Get the number of columns in each array
+        n1 = self.temperature_X.shape[1]
+        n2 = self.humidity_X.shape[1]
 
-    def save_heatmap(self, heatmap, filename, cmap, vmin=None, vmax=None):
+        # Normalize all columns except the last 4
+        temp_to_normalize = self.temperature_X[:, :n1 - 4]
+        temp_unnormalized = self.temperature_X[:, n1 - 4:]
+        normalized_temp = self.temp_scaler.transform(temp_to_normalize)
+        temp_X = np.hstack((normalized_temp, temp_unnormalized))
+        r, c = temp_X.shape
+        temp_y = self.temp_model.predict(temp_X[-r:].reshape(1, r, c))
+        new_temp = temp_y[:, :n1 - 4]
+        new_temp = self.temp_scaler.inverse_transform(new_temp)
+        # recover the new window for temperature
+        new_row = np.concatenate([new_temp[0], date_features])
+        self.temperature_X = np.vstack([self.temperature_X, new_row])[1:]
+
+        hum_to_normalize = self.humidity_X[:, :n2 - 4]
+        hum_unnormalized = self.humidity_X[:, n2 - 4:]
+        normalized_hum = self.hum_scaler.transform(hum_to_normalize)
+        hum_X = np.hstack((normalized_hum, hum_unnormalized))
+        r, c = temp_X.shape
+        hum_y = self.hum_model.predict(hum_X[-r:].reshape(1, r, c))
+        new_hum = hum_y[:, :n2 - 4]
+        new_hum = self.temp_scaler.inverse_transform(new_hum)
+        new_row = np.concatenate([new_hum[0], date_features])
+        self.humidity_X = np.vstack([self.humidity_X, new_row])[1:]
+        return new_temp, new_hum, date_features
+
+    def save_heatmap(self, heatmap, filename, cmap='viridis', vmin=None, vmax=None):
         output_folder = "output"
         os.makedirs(output_folder, exist_ok=True)
 
-        plt.figure(figsize=(8, 8))
-        plt.imshow(heatmap.T, cmap=cmap, origin="lower", vmin=vmin, vmax=vmax, alpha=0.9)
-        plt.colorbar(label=filename.replace("_", " ").capitalize())
-        plt.title(f"{filename.replace('_', ' ').capitalize()} Heatmap")
-        plt.axis("off")
+        # Set up figure
+        fig, ax = plt.subplots(figsize=(6, 6), dpi=600)
 
+        # Plot heatmap
+        cax = ax.imshow(
+            heatmap.T,
+            cmap=cmap,
+            origin="lower",
+            vmin=vmin,
+            vmax=vmax,
+            interpolation='none',
+            aspect='equal',
+            alpha=0.95
+        )
+
+
+        # Add colorbar
+        cbar = fig.colorbar(cax, ax=ax, shrink=0.8, pad=0.02)
+        cbar.set_label(filename.replace("_", " ").capitalize(), fontsize=16)
+        cbar.ax.tick_params(labelsize=12)
+
+        # Fonts and style
+        plt.rcParams.update({
+            "font.size": 16,
+            "font.family": "serif",  # or "sans-serif"
+        })
+
+        # Save to file
         file_path = os.path.join(output_folder, f"{filename}.png")
-        plt.savefig(file_path, dpi=300)
+        plt.savefig(file_path, bbox_inches='tight', transparent=True)
         plt.close()
 
     def save_all_heatmaps(self):
         temp_min, temp_max = np.min(self.temperature_map), np.max(self.temperature_map)
         humidity_min, humidity_max = np.min(self.humidity_map), np.max(self.humidity_map)
-        light_min, light_max = np.min(self.light_map), np.max(self.light_map)
+        # light_min, light_max = np.min(self.light_map), np.max(self.light_map)
 
         self.save_heatmap(self.temperature_map, "temperature", cmap="Reds", vmin=temp_min, vmax=temp_max)
         self.save_heatmap(self.humidity_map, "humidity", cmap="Blues", vmin=humidity_min, vmax=humidity_max)
-        self.save_heatmap(self.light_map, "light_intensity", cmap="YlOrBr", vmin=light_min, vmax=light_max)
+        # self.save_heatmap(self.light_map, "light_intensity", cmap="YlOrBr", vmin=light_min, vmax=light_max)
 
         print("Heatmaps saved in the output/ folder.")
 
     def get_temperature_at(self, x, y):
         return self.temperature_map[int(x), int(y)]
 
-    def get_light_at(self, x, y):
-        return self.light_map[int(x), int(y)]
+    # def get_light_at(self, x, y):
+    #     return self.light_map[int(x), int(y)]
 
     def get_humidity_at(self, x, y):
         return self.humidity_map[int(x), int(y)]
@@ -101,3 +161,6 @@ class Environment:
 
     def get_wind_direction(self):
         return self.wind_direction
+
+    def get_size(self):
+        return self.size

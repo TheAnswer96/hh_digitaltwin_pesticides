@@ -10,7 +10,7 @@ pip install numpy matplotlib scipy json
 
 Run the simulation:
 ```bash
-python main.py
+python forecast.py
 ```
 
 ## 2. Description of the Input
