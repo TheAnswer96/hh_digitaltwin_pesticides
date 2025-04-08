@@ -3,9 +3,9 @@ import math
 
 
 class Fruit:
-    def __init__(self, id, seed, ripe_lifetime, bite_tolerance):
+    def __init__(self, id, ripe_lifetime, ripeness, bite_tolerance):
         self.id = id
-        self.seed = seed
+        self.ripeness = ripeness
         self.ripe_lifetime = ripe_lifetime  # Days until overripe
         self.bite_tolerance = bite_tolerance  # How many bites before inedible
         self.bug_punctures = 0  # Track punctures

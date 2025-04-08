@@ -3,14 +3,13 @@ import random
 
 
 class Bug:
-    def __init__(self, id, seed, lifetime, stage, position):
+    def __init__(self, id, lifetime, stage, position, maximum_step):
         self.id = id
-        self.seed = seed
-        self.lifetime = lifetime
-        self.stage = stage
+        self.lifetime = lifetime #currently not employed since no lifecycle is considered
+        self.stage = stage #currently not employed since no lifecycle is considered
         self.position = tuple(position)
-        # Maximum movement length in centimeters
-        self.L_max = 5
+        # Maximum movement length in meters
+        self.L_max = maximum_step # meter
         # Small constant to avoid division by zero
         self.epsilon = 1e-6
 
