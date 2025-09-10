@@ -43,8 +43,26 @@ The project is structured using Object-Oriented Programming (OOP). Key component
 - **`Tree.py & Fruit.py`** - Handles fruit ripening and shading effects.
 - **`Pesticide.py`** - Simulates pesticide diffusion and mortality effects.
 - **`Simulation.py`** - Manages simulation flow and records execution.
+- 
+## 4. Citation
 
-## 4. Contact Us
+If you find this work useful in your research, please consider citing the following paper:
+
+```
+@article{MDMP2023,
+	title = {From Sensors to Simulation: A Digital Twin of a Pear Orchard Towards Halyomorpha halys Control},
+	author={Corò, Federico and Palazzetti, Lorenzo and Pinotti, Cristina M.},
+	booktitle={2025 IEEE International Workshop on Metrology for Agriculture and Forestry (MetroAgriFor)}, 
+	volume = {--},
+	pages = {--},
+	year = {2025},
+	issn = {--},
+	doi = {--},
+}
+```
+
+## 5. Contact Us
 
 **Email:** [lorenzo.palazzetti@unipg.it](mailto:lorenzo.palazzetti@unipg.it)
 **Email:** [federico.coro@unipd.it](mailto:federico.coro@unipd.it)
+
