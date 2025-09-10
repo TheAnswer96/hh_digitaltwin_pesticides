@@ -13,14 +13,15 @@ class Pesticide:
         self.decay_factor = 0.0025  # Decay rate per second
         self.mortality_probability = 0.8  # Probability of killing an insect upon exposure
         self.repulsion_probability = 0.6  # Probability of repelling an insect upon exposure
-        self.density = 1.2  # Approximate density in g/m³ (assumed)
+        # self.density = 1.2  # Approximate density in g/m³ (assumed)
 
     def spread(self, wind_direction, wind_speed, temperature, humidity, time_step):
         """Simulates Fenpropathrin dispersion over a given time step based on wind, diffusion, temperature, and humidity effects."""
         if self.quantity > 0:
             # Wind-driven movement (m)
-            wind_vector = np.array([np.cos(wind_direction), np.sin(wind_direction)])
-            self.position += wind_vector * wind_speed * time_step
+            # wind_vector = np.array([np.cos(wind_direction), np.sin(wind_direction)])
+            # delta = np.array(wind_direction) * wind_speed * time_step
+            # self.position = np.ndarray.tolist(np.array(self.position) + delta)
 
             # Turbulent diffusion effect (m)
             diffusion_factor = np.sqrt(time_step)  # Approximate turbulent diffusion behavior
@@ -35,7 +36,7 @@ class Pesticide:
             self.quantity *= np.exp(-self.decay_factor * time_step * temp_factor * humidity_factor)
 
             # End of effect condition: If quantity is too low, consider pesticide dissipated
-            if self.quantity < 1e-6:
+            if self.quantity < 0.01:
                 self.quantity = 0
 
     def get_concentration(self, point):
@@ -43,7 +44,7 @@ class Pesticide:
         if self.quantity == 0:
             return 0  # No effect if the pesticide has dissipated
 
-        distance = np.linalg.norm(point - self.position)
+        distance = np.linalg.norm(np.array(point) - np.array(self.position))
         if distance > self.radius:
             return 0  # No effect outside dispersion radius
 
@@ -53,4 +54,8 @@ class Pesticide:
     def affects_bug(self, bug):
         """Determines if a bug is affected based on the pesticide concentration."""
         concentration = self.get_concentration(bug.position)
-        return concentration * self.mortality_probability > np.random.rand()
+        mortalty_rate = concentration * self.mortality_probability
+        outcome = mortalty_rate > np.random.rand()
+        # print(f"concentration: {mortalty_rate}, outcome: {outcome}")
+        return outcome
+

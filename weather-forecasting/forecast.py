@@ -96,7 +96,7 @@ if __name__ == '__main__':
 
     scaler = MinMaxScaler()
     final_df[value_columns] = scaler.fit_transform(final_df[value_columns])
-    joblib.dump(scaler, os.path.join("..", "data","scaler_humidity.save"))
+    joblib.dump(scaler, os.path.join("..", "data", "scaler_humidity.save"))
     final_df["year"] = final_df["year"] - 2000
     features = final_df[value_columns + ["year", "month", "day", "hour"]].values
     target = final_df[value_columns].values

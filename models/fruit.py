@@ -50,4 +50,4 @@ class Fruit:
                 f"Rotten: {self.rotten}, Bug Positions: {self.bug_positions}")
 
     def get_csv_row(self):
-        return [self.id, self.seed, self.ripe_lifetime, self.bite_tolerance, self.bug_punctures, self.rotten]
+        return [self.id, self.ripe_lifetime, self.bite_tolerance, self.bug_punctures, self.rotten]

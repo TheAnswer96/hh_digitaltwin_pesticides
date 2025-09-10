@@ -81,7 +81,7 @@ class Environment:
         normalized_temp = self.temp_scaler.transform(temp_to_normalize)
         temp_X = np.hstack((normalized_temp, temp_unnormalized))
         r, c = temp_X.shape
-        temp_y = self.temp_model.predict(temp_X[-r:].reshape(1, r, c))
+        temp_y = self.temp_model.predict(temp_X[-r:].reshape(1, r, c), verbose=0)
         new_temp = temp_y[:, :n1 - 4]
         new_temp = self.temp_scaler.inverse_transform(new_temp)
         # recover the new window for temperature
@@ -93,7 +93,7 @@ class Environment:
         normalized_hum = self.hum_scaler.transform(hum_to_normalize)
         hum_X = np.hstack((normalized_hum, hum_unnormalized))
         r, c = temp_X.shape
-        hum_y = self.hum_model.predict(hum_X[-r:].reshape(1, r, c))
+        hum_y = self.hum_model.predict(hum_X[-r:].reshape(1, r, c), verbose=0)
         new_hum = hum_y[:, :n2 - 4]
         new_hum = self.temp_scaler.inverse_transform(new_hum)
         new_row = np.concatenate([new_hum[0], date_features])
@@ -164,3 +164,7 @@ class Environment:
 
     def get_size(self):
         return self.size
+
+    def get_info(self):
+        print(f"Env: temps: {self.current_temperature}\nhums: {self.current_humidity}")
+        return

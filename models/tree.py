@@ -5,4 +5,4 @@ class Tree:
         self.id = id
         self.position = tuple(position)
         self.shade_factor = shade_factor
-        self.fruits = [Fruit(**fruit) for fruit in fruits]
+        self.fruits = fruits
